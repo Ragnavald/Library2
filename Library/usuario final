@@ -1,0 +1,6 @@
+Para o usuário final precisamos configurar algumas coisas:
+
+init_set('display_errors',0); -> desliga os erros
+init_set('log_errors',1) -> Ativa o log dos erros
+init_set('error_log', 'caminho_do_arquivo'); -> define o arquivo para armazenar os logs
+    /*composer install --no-dev*/

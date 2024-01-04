@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+
+  php:
+    build:
+      dockerfile: DockerFile
+      context: .
+    container_name: php-apache
+    ports:
+      - '8080:80'
+    volumes:
+      - "/home/developer/Área de Trabalho/BibliotecaOO/Library:/var/www/html"
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    expose:
+      - 9003
+
+  db:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_DB: 'Library2'
+      # So you don't have to use root, but you can if you like
+      POSTGRES_USER: 'ronaldo'
+      # You can use whatever password you like
+      POSTGRES_PASSWORD: '12345'
+    ports:
+      - '5433:5432'
+    expose:
+      - '5433'
+    volumes:
+      - "/home/developer/Área de Trabalho/BibliotecaOO/Library/src/db/Script.sql:/docker-entrypoint-initdb.d/Script.sql"
+# Names our volume
+volumes:
+  my-db:

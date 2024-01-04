@@ -1,0 +1,17 @@
+FROM php:8.1.2-apache
+
+# Install required dependencies
+RUN apt-get update && apt-get install -y \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install PostgreSQL extension
+RUN pecl install xdebug && docker-php-ext-enable xdebug
+
+WORKDIR /var/www/html
+RUN adduser --disabled-password --gecos '' developer
+USER developer
+
+HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 CMD curl -f http://localhost:8080/ || exit 1
+
+EXPOSE 8080
