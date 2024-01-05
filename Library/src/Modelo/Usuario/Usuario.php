@@ -9,7 +9,7 @@ Class Usuario implements \JsonSerializable{
     private string $code;
     private string $dataExpiracao;
     private string $dataCriacao;
-    private bool $isBlock;
+    private bool $isBlock = false;
     private string $periodBlock;
     private bool $isVerificated = false;
 

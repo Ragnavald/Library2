@@ -8,9 +8,9 @@ use Sistema\Biblioteca\Service\Email\Email;
 use Sistema\Biblioteca\Exceptions\EmailExceptions\InvalidEmailException;
 use Sistema\Biblioteca\Modelo\Usuario\Usuario;
 use Sistema\Biblioteca\Exceptions\EmailExceptions\InvalidCodeException;
-use Sistema\Biblioteca\Exceptions\EmailExceptions\TimeOutCodeException;
+use Sistema\Biblioteca\Exceptions\UserExceptions\TimeOutCodeException;
 use Sistema\Biblioteca\Exceptions\UserExceptions\UserBlockException;
-use UpdateUser;
+use Sistema\Biblioteca\Service\SQL\Update\UpdateUser;
 
 Class ValidaEmail{
 
@@ -112,7 +112,7 @@ Class ValidaEmail{
                   throw new InvalidCodeException;
             }
             try{
-                  UpdateUser::upVerificated($user);
+                  (new UpdateUser())->upVerificated($user);
                   return true;
             }catch(PDOException $e){
                   echo $e->getMessage();
