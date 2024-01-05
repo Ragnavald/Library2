@@ -7,6 +7,7 @@ RUN apt-get update && apt-get install -y \
 
 # Install PostgreSQL extension
 RUN pecl install xdebug && docker-php-ext-enable xdebug
+RUN docker-php-ext-install pdo pdo_pgsql
 
 WORKDIR /var/www/html
 RUN adduser --disabled-password --gecos '' developer

@@ -6,16 +6,19 @@ use DateTime;
 use Sistema\Biblioteca\Service\Email\Email;
 use Sistema\Biblioteca\Exceptions\EmailExceptions\InvalidEmailException;
 use Sistema\Biblioteca\Modelo\Usuario\Usuario;
+use Sistema\Biblioteca\Exceptions\EmailExceptions\InvalidCodeException;
+use Sistema\Biblioteca\Exceptions\EmailExceptions\TimeOutCodeException;
+use Sistema\Biblioteca\Exceptions\EmailExceptions\UserBlockException;
 
 Class ValidaEmail{
 
-   private string $code;
-   private string $codeTime;
-   public function validaEmail(Usuario $user):bool{
+      private static $tentativas = 4;
 
+   public static function validaEmail(Usuario $user):bool{
+
+         $dataExpiracao =  new DateTime($user->getDataExpiracao());
+         $dataExpiracao = $dataExpiracao->setTimezone(new \DateTimeZone("America/Sao_Paulo"))->format("d-m-Y H:i:s");
          $email = preg_replace('/\s+/', '', $user->getEmail());
-         $this->code = bin2hex(random_bytes(3));
-         $this->codeTime = date('Y-m-d H:i:s', strtotime('+1 minutes'));
          $body = <<<MESSAGE
             <html>
             <head>
@@ -73,8 +76,8 @@ Class ValidaEmail{
             <div class="container">
                <h2>Verificação de Código</h2>
                <p>Olá! Você está prestes a concluir o processo de verificação. Utilize o código abaixo para verificar sua identidade:</p>
-               <p class="code">$this->code</p>
-               <p>Este código expirará em 10 minutos.</p>
+               <p class="code">{$user->getCode()}</p>
+               <p>Este código expirará em {$dataExpiracao}.</p>
                <p class="footer">Este é um e-mail automático. Por favor, não responda a este e-mail.</p>
             </div>
          </body>
@@ -97,12 +100,43 @@ Class ValidaEmail{
          }
     }
 
-    public function getCode():string{
-      return $this->code;
-    }
-    public function getCodeTime(): string{
-      return $this->codeTime;
-    }
+    static function autentificaEmail(Usuario $user, string $code):bool{
+
+      try{
+            if($user->getDataExpiracao() < gmdate('d-m-Y H:i:s')){
+                  throw new TimeOutCodeException;
+                  }
+            if($user->getCode() != $code){
+                  throw new InvalidCodeException;
+            }
+            return true;
+
+      }catch(InvalidCodeException $e){
+            try{
+
+                  if(self::$tentativas == 0){
+                        throw new UserBlockException;
+                  }
+                  self::$tentativas -= 1;
+                  return false;
+
+            }catch(UserBlockException $e){
+                  $user->setIsBlock(true);
+                  $e->getMessage();
+                  return false;
+            }
+
+      }catch(TimeOutCodeException $e){
+
+            $e->getMessage();
+            return false;
+
+      }
+
+
+
+  }
+
 
 }
 
