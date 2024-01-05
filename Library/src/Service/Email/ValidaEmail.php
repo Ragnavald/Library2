@@ -3,12 +3,14 @@
 namespace Sistema\Biblioteca\Service\Email;
 
 use DateTime;
+use PDOException;
 use Sistema\Biblioteca\Service\Email\Email;
 use Sistema\Biblioteca\Exceptions\EmailExceptions\InvalidEmailException;
 use Sistema\Biblioteca\Modelo\Usuario\Usuario;
 use Sistema\Biblioteca\Exceptions\EmailExceptions\InvalidCodeException;
 use Sistema\Biblioteca\Exceptions\EmailExceptions\TimeOutCodeException;
-use Sistema\Biblioteca\Exceptions\EmailExceptions\UserBlockException;
+use Sistema\Biblioteca\Exceptions\UserExceptions\UserBlockException;
+use UpdateUser;
 
 Class ValidaEmail{
 
@@ -109,7 +111,13 @@ Class ValidaEmail{
             if($user->getCode() != $code){
                   throw new InvalidCodeException;
             }
-            return true;
+            try{
+                  UpdateUser::upVerificated($user);
+                  return true;
+            }catch(PDOException $e){
+                  echo $e->getMessage();
+                  return false;
+            }
 
       }catch(InvalidCodeException $e){
             try{

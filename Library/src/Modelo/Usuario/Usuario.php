@@ -11,6 +11,7 @@ Class Usuario implements \JsonSerializable{
     private string $dataCriacao;
     private bool $isBlock;
     private string $periodBlock;
+    private bool $isVerificated = false;
 
     public function __construct(
         private string $email,

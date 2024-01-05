@@ -40,3 +40,31 @@ CREATE TABLE IF NOT EXISTS funcionarios (
   funcionario JSON,
   fkPessoa INT REFERENCES pessoas(idPessoa)
 );
+
+
+/*Functions*/
+CREATE OR REPLACE FUNCTION isBlock(email VARCHAR)
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+AS
+$$
+BEGIN
+  IF EXISTS(SELECT 1 FROM usuarios WHERE usuario->>"email" = email AND usuario->> "isBLock" IS NOT NULL) THEN
+    RETURN true;
+  ELSE
+    RETURN false;
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION userExists(email VARCHAR)
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+AS
+$$
+BEGIN
+  IF EXISTS(SELECT 1 FROM usuarios WHERE usuario->>"email" = email) THEN
+    RETURN true;
+  ELSE
+    RETURN false;
+END;
+$$;

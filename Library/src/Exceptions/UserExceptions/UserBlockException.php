@@ -1,5 +1,5 @@
 <?php
-namespace Sistema\Biblioteca\Exceptions\EmailExceptions;
+namespace Sistema\Biblioteca\Exceptions\UserExceptions;
 use Exception;
 Class UserBlockException extends Exception{
     public function __construct() {
