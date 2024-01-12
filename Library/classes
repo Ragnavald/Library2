@@ -1,29 +1,34 @@
-sistema local de locação para admin
-Reserva pelo site
 
-Classes:
+MODELO
 
-    Livro {titulo,autor,gênero, cod_barras, Fornecedor}
-    Cpf{cpf}
-    Cnpj{cnpj}
-    Endereco{cep, numero}
-    abstract Usuario {email, senha}
-        Pessoa {nome, telefone, Endereco, dataNascimento, Cpf}
-            Abstract Funcionário {salario}
-                Gerente {Acesso}
-                Caixa {Acesso}
-                bibliotecario{Acesso}
-        Fornecedor{empresa, Editora, cnpj, Acesso}
-        Cliente{Acesso}
-    Acesso
-        Comum {}
-        Admin {}
-    Emprestimo {dataEmprestimo, Usuario, DataDevolução}
-    Interface Autentificador : setAcesso
+    Classes:
 
-Services
+        Livro {titulo,autor,gênero, cod_barras, Fornecedor}
+        Cpf{cpf}
+        Cnpj{cnpj}
+        Endereco{cep, numero}
+        abstract Usuario {email, senha}
+            Pessoa {nome, telefone, Endereco, dataNascimento, Cpf}
+                Abstract Funcionário {salario}
+                    Gerente {Acesso}
+                    Caixa {Acesso}
+                    bibliotecario{Acesso}
+            Fornecedor{empresa, Editora, cnpj, Acesso}
+            Cliente{Acesso}
+        Acesso
+            Comum {}
+            Admin {}
+        Emprestimo {dataEmprestimo, Usuario, DataDevolução}
+        Interface Autentificador : setAcesso
 
-Login
-SingIn
+    Services:
+        SQL
+        Email
 
+CONTROLLER
+    login {login()}
+    SingIn{SingIn(),validaEmail()}
+
+VIEW
+    login/SingIn
 

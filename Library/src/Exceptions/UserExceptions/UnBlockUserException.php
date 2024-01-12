@@ -1,11 +1,9 @@
 <?php
 namespace Sistema\Biblioteca\Exceptions\UserExceptions;
 use Exception;
-use Sistema\Biblioteca\Modelo\Usuario\Usuario;
-
-Class UserBlockException extends Exception{
+Class UnBlockUserException extends Exception{
     public function __construct() {
-        parent::__construct();
+        parent::__construct("usuário desbloqueado");
     }
 }
 

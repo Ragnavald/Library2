@@ -11,6 +11,7 @@ services:
       - '8080:80'
     volumes:
       - "/home/developer/Área de Trabalho/BibliotecaOO/Library:/var/www/html"
+      - "/home/developer/Área de Trabalho/BibliotecaOO/99-xdebug.ini:/usr/local/etc/php/conf.d/99-xdebug.ini"
     extra_hosts:
       - host.docker.internal:host-gateway
     expose:

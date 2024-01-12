@@ -3,7 +3,6 @@
 namespace Sistema\Biblioteca\Service\Email;
 
 use DateTime;
-use PDOException;
 use Sistema\Biblioteca\Service\Email\Email;
 use Sistema\Biblioteca\Exceptions\EmailExceptions\InvalidEmailException;
 use Sistema\Biblioteca\Modelo\Usuario\Usuario;
@@ -14,10 +13,10 @@ use Sistema\Biblioteca\Service\SQL\Update\UpdateUser;
 
 Class ValidaEmail{
 
-      private static $tentativas = 4;
-
    public static function validaEmail(Usuario $user):bool{
-
+      if($user->getIsBlock()){
+      return false;
+      }
          $dataExpiracao =  new DateTime($user->getDataExpiracao());
          $dataExpiracao = $dataExpiracao->setTimezone(new \DateTimeZone("America/Sao_Paulo"))->format("d-m-Y H:i:s");
          $email = preg_replace('/\s+/', '', $user->getEmail());
@@ -86,62 +85,49 @@ Class ValidaEmail{
          </html>
          MESSAGE;
          $subject =  "Código de Ativação Library";
-         $mail = new Email('l08305074@gmail.com','gwfo oqav brma saeo');
+         $mail = new Email('l08305074@gmail.com','');
          $altBody = "From".$mail->Username;
 
          try{
 
             $mail->sendEmail($mail->Username,$mail->Username,$email, $subject,$body,$altBody);
             return true;
-
          }catch(InvalidEmailException $e){
-
             echo $e->getMessage();
             return false;
 
          }
     }
 
-    static function autentificaEmail(Usuario $user, string $code):bool{
+    static function autentificaCode(Usuario $user, string $code):bool{
 
       try{
+            if($user->getIsBlock()){
+                  throw new UserBlockException;
+            }
             if($user->getDataExpiracao() < gmdate('d-m-Y H:i:s')){
                   throw new TimeOutCodeException;
-                  }
+            }
             if($user->getCode() != $code){
                   throw new InvalidCodeException;
             }
-            try{
-                  (new UpdateUser())->upVerificated($user);
-                  return true;
-            }catch(PDOException $e){
-                  echo $e->getMessage();
-                  return false;
-            }
+            (new UpdateUser())->upVerificated($user);
+            return true;
 
-      }catch(InvalidCodeException $e){
-            try{
+      }catch(InvalidCodeException | TimeOutCodeException $e){
 
-                  if(self::$tentativas == 0){
-                        throw new UserBlockException;
-                  }
-                  self::$tentativas -= 1;
-                  return false;
+            $update = new UpdateUser();
+            if($user->getAttempts() > 0){
+            $update->decrementAttempts($user);
 
-            }catch(UserBlockException $e){
-                  $user->setIsBlock(true);
-                  $e->getMessage();
-                  return false;
-            }
-
-      }catch(TimeOutCodeException $e){
-
-            $e->getMessage();
             return false;
-
+            }
+            (new UpdateUser())->blockUser($user,true);
+            return false;
+      }catch(UserBlockException $e){
+            echo $e->getMessage();
+            return false;
       }
-
-
 
   }
 
